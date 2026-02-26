@@ -17,8 +17,19 @@ var installCmd = &cobra.Command{
 	Use:   "install",
 	Short: "Install the shell hook to record commands",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if installShell == "" {
-			return fmt.Errorf("shell is required (--shell bash|zsh)")
+		shellName := installShell
+		if shellName == "" {
+			shellName = shell.DetectShell()
+			if shellName == "" {
+				return fmt.Errorf("could not auto-detect shell; please specify with --shell bash|zsh")
+			}
+			fmt.Printf("Detected shell: %s\n", shellName)
+		}
+
+		installed, err := shell.IsInstalled(shellName)
+		if err == nil && installed {
+			fmt.Printf("cmdsetgo hook is already installed for %s.\n", shellName)
+			return nil
 		}
 
 		eventsPath := installEvents
@@ -35,11 +46,11 @@ var installCmd = &cobra.Command{
 			return err
 		}
 
-		if err := shell.Install(installShell, eventsPath); err != nil {
+		if err := shell.Install(shellName, eventsPath); err != nil {
 			return err
 		}
 
-		fmt.Printf("Successfully installed cmdsetgo hook for %s.\n", installShell)
+		fmt.Printf("Successfully installed cmdsetgo hook for %s.\n", shellName)
 		fmt.Println("Please restart your terminal or source your rc file to start recording.")
 		return nil
 	},

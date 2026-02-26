@@ -88,6 +88,38 @@ func GetRCPath(shell string) (string, error) {
 	}
 }
 
+// DetectShell attempts to detect the current user shell.
+func DetectShell() string {
+	shellEnv := os.Getenv("SHELL")
+	if shellEnv != "" {
+		if strings.Contains(shellEnv, "zsh") {
+			return "zsh"
+		}
+		if strings.Contains(shellEnv, "bash") {
+			return "bash"
+		}
+	}
+	return ""
+}
+
+// IsInstalled checks if the cmdsetgo hook is installed in the shell's RC file.
+func IsInstalled(shellName string) (bool, error) {
+	rcPath, err := GetRCPath(shellName)
+	if err != nil {
+		return false, err
+	}
+
+	content, err := os.ReadFile(rcPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return strings.Contains(string(content), StartMarker), nil
+}
+
 func Install(shellName string, eventsPath string) error {
 	rcPath, err := GetRCPath(shellName)
 	if err != nil {
