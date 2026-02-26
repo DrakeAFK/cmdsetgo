@@ -189,6 +189,22 @@ Generated script includes:
 
 ---
 
+## Uninstallation
+
+To completely remove the shell hooks and aliases, run:
+
+```bash
+./scripts/uninstall.sh
+```
+
+> [!IMPORTANT]
+> **Complete cleanup requires a NEW terminal.**  
+> `cmdsetgo` hooks and aliases will persist in your current session even after uninstallation. **You must close your terminal and open a new tab/window** for the changes to fully take effect. Simply running `source ~/.zshrc` (or equivalent) will not remove active aliases/functions from memory.
+
+After running this and restarting your terminal, you can safely delete the `cmdsetgo` repository directory.
+
+---
+
 ## License
 
 MIT License.

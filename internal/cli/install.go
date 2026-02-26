@@ -68,15 +68,25 @@ var uninstallCmd = &cobra.Command{
 	Use:   "uninstall",
 	Short: "Uninstall the shell hook",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if installShell == "" {
-			return fmt.Errorf("shell is required (--shell bash|zsh)")
+		shellName := installShell
+		if shellName == "" {
+			shellName = shell.DetectShell()
+			if shellName == "" {
+				return fmt.Errorf("could not auto-detect shell; please specify with --shell bash|zsh")
+			}
+			fmt.Printf("Detected shell: %s\n", shellName)
 		}
 
-		if err := shell.Uninstall(installShell); err != nil {
+		if err := shell.Uninstall(shellName); err != nil {
 			return err
 		}
 
-		fmt.Printf("Successfully uninstalled cmdsetgo hook for %s.\n", installShell)
+		fmt.Printf("Successfully uninstalled cmdsetgo hook for %s.\n", shellName)
+		fmt.Println()
+		fmt.Println("📢 IMPORTANT: Shell session cleanup required")
+		fmt.Println("   The hook and aliases have been removed from your configuration.")
+		fmt.Println("   Existing terminal tabs will keep the hook active until they are closed.")
+		fmt.Println("   Please open a NEW terminal tab to start with a clean slate (sourcing is not enough).")
 		return nil
 	},
 }
