@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/drakeafk/cmdsetgo/internal/shell"
 	"github.com/drakeafk/cmdsetgo/internal/store"
@@ -11,6 +12,7 @@ import (
 var (
 	installShell  string
 	installEvents string
+	installBin    string
 )
 
 var installCmd = &cobra.Command{
@@ -24,12 +26,6 @@ var installCmd = &cobra.Command{
 				return fmt.Errorf("could not auto-detect shell; please specify with --shell bash|zsh")
 			}
 			fmt.Printf("Detected shell: %s\n", shellName)
-		}
-
-		installed, err := shell.IsInstalled(shellName)
-		if err == nil && installed {
-			fmt.Printf("cmdsetgo hook is already installed for %s.\n", shellName)
-			return nil
 		}
 
 		eventsPath := installEvents
@@ -46,11 +42,23 @@ var installCmd = &cobra.Command{
 			return err
 		}
 
-		if err := shell.Install(shellName, eventsPath); err != nil {
+		binaryPath := installBin
+		if binaryPath == "" {
+			// Try to get absolute path to current executable
+			exe, err := os.Executable()
+			if err == nil {
+				binaryPath = exe
+			}
+		}
+
+		if err := shell.Install(shellName, eventsPath, binaryPath); err != nil {
 			return err
 		}
 
 		fmt.Printf("Successfully installed cmdsetgo hook for %s.\n", shellName)
+		if binaryPath != "" {
+			fmt.Printf("Added alias: cmdsetgo -> %s\n", binaryPath)
+		}
 		fmt.Println("Please restart your terminal or source your rc file to start recording.")
 		return nil
 	},
@@ -79,6 +87,7 @@ func init() {
 
 	installCmd.Flags().StringVar(&installShell, "shell", "", "Shell to install hook for (bash or zsh)")
 	installCmd.Flags().StringVar(&installEvents, "events", "", "Path to the events log file (optional)")
+	installCmd.Flags().StringVar(&installBin, "bin", "", "Absolute path to the cmdsetgo binary (optional)")
 
 	uninstallCmd.Flags().StringVar(&installShell, "shell", "", "Shell to uninstall hook from (bash or zsh)")
 }

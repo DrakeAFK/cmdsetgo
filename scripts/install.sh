@@ -20,18 +20,18 @@ go build -o cmdsetgo ./cmd/cmdsetgo
 # 3. Create a bin directory if it doesn't exist (local to repo)
 mkdir -p bin
 mv cmdsetgo bin/
+ABS_BIN_PATH="$(pwd)/bin/cmdsetgo"
 
 # 4. Check if cmdsetgo is in PATH
 if ! command -v cmdsetgo &> /dev/null; then
     echo "⚠️  cmdsetgo binary was built successfully in ./bin/cmdsetgo"
-    echo "💡 To use it globally, add it to your PATH or move it to /usr/local/bin:"
-    echo "   sudo mv ./bin/cmdsetgo /usr/local/bin/"
+    echo "💡 We will add an alias so you can use 'cmdsetgo' from anywhere."
     echo ""
-    echo "Running local install for now..."
-    ./bin/cmdsetgo install
+    echo "Running local install..."
+    "$ABS_BIN_PATH" install --bin "$ABS_BIN_PATH"
 else
     echo "✅ cmdsetgo is already in your PATH."
-    cmdsetgo install
+    cmdsetgo install --bin "$ABS_BIN_PATH"
 fi
 
 echo ""

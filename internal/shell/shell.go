@@ -120,7 +120,7 @@ func IsInstalled(shellName string) (bool, error) {
 	return strings.Contains(string(content), StartMarker), nil
 }
 
-func Install(shellName string, eventsPath string) error {
+func Install(shellName string, eventsPath string, binaryPath string) error {
 	rcPath, err := GetRCPath(shellName)
 	if err != nil {
 		return err
@@ -147,7 +147,12 @@ func Install(shellName string, eventsPath string) error {
 		hook = ZshHook
 	}
 
-	block := fmt.Sprintf("\n%s\nexport CMDSETGO_EVENTS_PATH=\"%s\"\n%s\n%s\n", StartMarker, eventsPath, hook, EndMarker)
+	aliasLine := ""
+	if binaryPath != "" {
+		aliasLine = fmt.Sprintf("alias cmdsetgo=\"%s\"\n", binaryPath)
+	}
+
+	block := fmt.Sprintf("\n%s\nexport CMDSETGO_EVENTS_PATH=\"%s\"\n%s%s\n%s\n", StartMarker, eventsPath, aliasLine, hook, EndMarker)
 
 	f, err := os.OpenFile(rcPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
