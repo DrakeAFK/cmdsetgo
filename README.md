@@ -30,35 +30,40 @@ It’s built for:
 
 ## Install
 
-### Recommended (Go users)
+### One-liner (Fastest)
 
-```bash
-go install github.com/drakeafk/cmdsetgo/cmd/cmdsetgo@latest
-```
-
-Make sure $(go env GOPATH)/bin is in your PATH.
-
-### From source
+Clone the repo and run the bootstrap script:
 
 ```bash
 git clone https://github.com/drakeafk/cmdsetgo
 cd cmdsetgo
-go build ./cmd/cmdsetgo
+./scripts/install.sh
 ```
+
+This builds the binary and sets up the shell hook automatically.
+
+### For Go users
+
+```bash
+go install github.com/drakeafk/cmdsetgo/cmd/cmdsetgo@latest
+cmdsetgo install
+```
+
+> [!TIP]
+> **Command not found?**  
+> If you get `cmdsetgo: command not found`, make sure `$(go env GOPATH)/bin` is in your `PATH`. Alternatively, you can run the local binary from the repo: `./bin/cmdsetgo status`.
 
 ---
 
-## Quick demo workflow
+## Quick Start
 
-### 1. Install shell integration
+### 1. Verify installation
 
 ```bash
-cmdsetgo install --shell zsh
-# or
-cmdsetgo install --shell bash
+cmdsetgo status
 ```
 
-Open a new terminal after installing to start recording.
+If everything looks good, open a new terminal tab to start recording.
 
 ---
 
